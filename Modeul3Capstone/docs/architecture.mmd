@@ -1,0 +1,17 @@
+graph TD
+  subgraph Browser["Browser Layer (React + Vite)"]
+    UI["TaskFlow Web App"]
+  end
+
+  subgraph Backend["Backend Layer (FastAPI)"]
+    API["REST API Endpoints"]
+    Service["Application Services"]
+  end
+
+  subgraph Storage["Storage Layer (SQLite - Demo)"]
+    DB["SQLite Database"]
+  end
+
+  UI -- "JSON over HTTP" --> API
+  API --> Service
+  Service -- "SQLAlchemy" --> DB

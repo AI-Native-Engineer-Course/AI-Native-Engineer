@@ -1,0 +1,23 @@
+sequenceDiagram
+    autonumber
+    participant U as User
+    participant R as React UI
+    participant F as FastAPI Router
+    participant S as TaskService
+    participant D as SQLite
+
+    U->>R: Fill form and click "Create Task"
+    R->>R: Optimistically add pending task to list
+    R->>F: POST /tasks (JSON payload)
+
+    F->>F: Validate request body
+    F->>S: create_task(data)
+
+    S->>D: INSERT INTO tasks (...)
+    D-->>S: Return new row (id, timestamps, fields)
+
+    S-->>F: Created task DTO
+    F-->>R: 201 Created + created task (JSON)
+
+    R->>R: Reconcile optimistic item with server task
+    R-->>U: Show new task in list (saved)
