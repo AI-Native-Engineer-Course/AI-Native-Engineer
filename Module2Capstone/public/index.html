@@ -1,0 +1,61 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>TaskFlow Mini</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  body{font-family:system-ui,sans-serif;margin:0;display:grid;
+       grid-template-columns:1fr 1fr;gap:20px;padding:20px;}
+  h1{color:#1F497D;grid-column:1/-1;margin:0 0 10px;}
+  .panel{border:1px solid #ddd;border-radius:8px;padding:16px;}
+  .task{padding:8px;border-bottom:1px solid #eee;}
+  .tabs button{margin-right:8px;}
+  input,select,button{padding:6px;margin:2px;}
+</style></head><body>
+  <h1>TaskFlow Mini</h1>
+  <div class="panel">
+    <h2>Tasks</h2>
+    <div id="tasks"></div>
+    <h3>+ New Task</h3>
+    <input id="t" placeholder="Task title (3+ chars)" size="30">
+    <select id="p"><option>low</option><option selected>medium</option>
+      <option>high</option></select>
+    <button onclick="create()">Create</button>
+  </div>
+  <div class="panel">
+    <h2>Live Architecture (AI-generated, rendered by Mermaid.js)</h2>
+    <div class="tabs">
+      <button onclick="show('architecture')">Architecture</button>
+      <button onclick="show('sequence')">Sequence</button>
+      <button onclick="show('er')">ER Diagram</button>
+    </div>
+    <div id="diagram" class="mermaid"></div>
+  </div>
+<script>
+  mermaid.initialize({ startOnLoad:false, theme:'default' });
+  let diagrams = {};
+ 
+  async function load(){
+    const tasks = await (await fetch('/api/tasks')).json();
+    document.getElementById('tasks').innerHTML = tasks.map(t =>
+      `<div class="task"><b>[${t.priority}]</b> ${t.title}
+       <i>— ${t.assignee || 'unassigned'}</i></div>`).join('');
+    diagrams = await (await fetch('/api/diagrams')).json();
+    show('architecture');
+  }
+  async function show(key){
+    const el = document.getElementById('diagram');
+    el.removeAttribute('data-processed');
+    el.innerHTML = diagrams[key];
+    await mermaid.run({ nodes:[el] });
+  }
+  async function create(){
+    const title = document.getElementById('t').value;
+    const priority = document.getElementById('p').value;
+    const r = await fetch('/api/tasks', {method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ title, priority })});
+    if (!r.ok) return alert((await r.json()).error);
+    document.getElementById('t').value = '';
+    load();
+  }
+  load();
+</script></body></html>

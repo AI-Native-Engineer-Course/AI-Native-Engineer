@@ -1,0 +1,24 @@
+erDiagram
+    TASK {
+        int id PK
+        string title
+        string description
+        string status "open|in_progress|done"
+        string priority "low|med|high"
+        date due_date
+        datetime created_at
+        datetime updated_at
+    }
+
+    TAG {
+        int id PK
+        string name UK
+    }
+
+    TASKTAG {
+        int task_id PK, FK
+        int tag_id PK, FK
+    }
+
+    TASK ||--o{ TASKTAG : has
+    TAG ||--o{ TASKTAG : has
