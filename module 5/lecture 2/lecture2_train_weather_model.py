@@ -108,27 +108,3 @@ history = model.fit(
     callbacks=[early_stop],
 )
 
-# ---------------------------------------------------------------------------
-# 6. Evaluate on the held-out test set
-# ---------------------------------------------------------------------------
-test_preds = model.predict(X_test_s, verbose=0).flatten()
-mae = mean_absolute_error(y_test, test_preds)
-baseline = mean_absolute_error(y_test, X_test[:, feature_cols.index("temp_mean_f")])
-
-print()
-print("=" * 60)
-print(f"Test MAE             (our model):       {mae:.2f} °F")
-print(f"Baseline MAE (predict 'same as today'): {baseline:.2f} °F")
-print(f"Improvement over baseline: {(baseline - mae):.2f} °F")
-print("=" * 60)
-
-# ---------------------------------------------------------------------------
-# 7. Save artifacts for downstream use (lecture 3 will load these)
-# ---------------------------------------------------------------------------
-model.save("weather_model.keras")
-with open("weather_scaler.pkl", "wb") as f:
-    pickle.dump(scaler, f)
-with open("feature_columns.json", "w") as f:
-    json.dump(feature_cols, f)
-
-print("\nSaved weather_model.keras, weather_scaler.pkl, feature_columns.json")

@@ -46,7 +46,7 @@ print("1. Sentiment analysis  (distilbert-base-uncased-sst-2)")
 print("=" * 60)
 sentiment = pipeline(
     "sentiment-analysis",
-    model="distilbert-base-uncased-finetuned-sst-2-english",
+    model="distilbert-base-uncased-finetuned-sst-2-english", framework="pt"
 )
 result = sentiment(REVIEW)[0]
 print(f"Label: {result['label']}  Score: {result['score']:.4f}")
@@ -58,7 +58,7 @@ print()
 print("=" * 60)
 print("2. Zero-shot classification  (facebook/bart-large-mnli)")
 print("=" * 60)
-zsc = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
+zsc = pipeline("zero-shot-classification", model="facebook/bart-large-mnli", framework="pt")
 labels = ["weather", "billing complaint", "feature request", "bug report"]
 result = zsc(REVIEW, candidate_labels=labels)
 for label, score in zip(result["labels"], result["scores"]):
@@ -71,7 +71,7 @@ print()
 print("=" * 60)
 print("3. Summarization  (sshleifer/distilbart-cnn-12-6)")
 print("=" * 60)
-summarizer = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
+summarizer = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6", framework="pt")
 result = summarizer(ARTICLE, max_length=60, min_length=20, do_sample=False)[0]
 print(result["summary_text"].strip())
 
@@ -85,7 +85,7 @@ print("=" * 60)
 ner = pipeline(
     "ner",
     model="dslim/bert-base-NER",
-    aggregation_strategy="simple",
+    aggregation_strategy="simple", framework="pt"
 )
 entities = ner(ARTICLE)
 for ent in entities:
